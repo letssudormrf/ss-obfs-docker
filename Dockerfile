@@ -4,7 +4,8 @@ LABEL maintainer="letssudormrf"
 
 #GIT
 ENV SS_GIT_PATH="https://github.com/shadowsocks/shadowsocks-libev" \
-    OBFS_GIT_PATH="https://github.com/shadowsocks/simple-obfs"
+    OBFS_GIT_PATH="https://github.com/shadowsocks/simple-obfs" \
+    PROXYCHAINS_GIT_PATH="https://github.com/rofl0r/proxychains-ng"
 
 #Download applications
 RUN set -ex \
@@ -35,7 +36,7 @@ RUN set -ex \
                                         g++ \
                                         gcc \
 
-#Compile Shadowsocks + simple-obfs
+#Compile Shadowsocks + simple-obfs + proxychains
    && cd /tmp \
    && git clone ${SS_GIT_PATH} \
    && cd ${SS_GIT_PATH##*/} \
@@ -50,6 +51,11 @@ RUN set -ex \
    && ./autogen.sh \
    && ./configure --prefix=/usr && make \
    && make install \
+   && cd /tmp \
+   && git clone ${PROXYCHAINS_GIT_PATH} \
+   && cd ${PROXYCHAINS_GIT_PATH##*/} \
+   && ./configure --prefix=/usr --sysconfdir=/etc && make \
+   && make install && make install-config \
    && cd \
    && apk del TMP \
    && rm -rf /tmp/* \
