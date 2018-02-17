@@ -8,7 +8,6 @@ ENV SS_GIT_PATH="https://github.com/shadowsocks/shadowsocks-libev" \
 
 #Download applications
 RUN set -ex \
-    && if [ $(wget -qO- ipinfo.io/country) == CN ]; then echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories ;fi \
     && apk --update add --no-cache libcrypto1.0 \
                                    libev \
                                    libsodium \
@@ -57,7 +56,7 @@ RUN set -ex \
    && rm -rf /var/cache/apk/*
 
 COPY entrypoint.sh /usr/local/bin/
-RUN chmod +x usr/local/bin/entrypoint.sh
+RUN chmod a+rwx usr/local/bin/entrypoint.sh
 
 EXPOSE 8443/tcp 8443/udp
 
