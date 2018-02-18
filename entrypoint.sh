@@ -12,6 +12,7 @@ SS_OPTS=${SS_OPTS:-"-u"}
 OPTS=${OPTS:-"-s ${SERVER} -p ${PORT} -m ${METHOD} -k ${PASSWORD} --plugin ${PLUGIN} --plugin-opts ${PLUGIN_OPTS} ${SS_OPTS}"}
 
 PROXY=${PROXY:-""}
+PROXYDNS=${PROXYDNS:-""}
 PROXYCHAINS_CONF=${PROXYCHAINS_CONF:-"/tmp/proxychains.conf"}
 PROXYLIST=${PROXYLIST:-"socks5 127.0.0.1 1080"}
 PROXYCHAINS=${PROXYCHAINS:-"proxychains4 -f ${PROXYCHAINS_CONF}"}
@@ -21,11 +22,14 @@ PROXYLIST_STR1=$(echo ${PROXYLIST} | awk -F' ' '{print $1}')
 PROXYLIST_STR2=$(echo ${PROXYLIST} | awk -F' ' '{print $2}')
 PROXYLIST_STR3=$(echo ${PROXYLIST} | awk -F' ' '{print $3}')
 PROXYLIST="${PROXYLIST_STR1} $(getent hosts ${PROXYLIST_STR2} | awk '{print $1}') ${PROXYLIST_STR3}"
+if [ -n "${PROXYDNS}" ]; then
+proxy_dns="proxy_dns"
+fi
 if [ -n "${PROXY}" ]; then
 cat > ${PROXYCHAINS_CONF} <<EOF
 strict_chain
 quiet_mode
-proxy_dns 
+${proxy_dns}
 remote_dns_subnet 224
 tcp_read_time_out 15000
 tcp_connect_time_out 8000
