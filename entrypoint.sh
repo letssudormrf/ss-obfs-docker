@@ -21,7 +21,8 @@ PROXYCHAINS=${PROXYCHAINS:-"proxychains4 -f ${PROXYCHAINS_CONF}"}
 PROXYLIST_STR1=$(echo ${PROXYLIST} | awk -F' ' '{print $1}')
 PROXYLIST_STR2=$(echo ${PROXYLIST} | awk -F' ' '{print $2}')
 PROXYLIST_STR3=$(echo ${PROXYLIST} | awk -F' ' '{print $3}')
-PROXYLIST="${PROXYLIST_STR1} $(getent hosts ${PROXYLIST_STR2} | awk '{print $1}') ${PROXYLIST_STR3}"
+PROXYLIST_IP=$(getent hosts ${PROXYLIST_STR2} | awk '{print $1}')
+PROXYLIST="${PROXYLIST_STR1} ${PROXYLIST_IP} ${PROXYLIST_STR3}"
 if [ -n "${PROXYDNS}" ]; then
 proxy_dns="proxy_dns"
 fi
@@ -37,7 +38,14 @@ localnet 192.168.0.0/255.255.0.0
 [ProxyList]
 ${PROXYLIST}
 EOF
-${PROXYCHAINS} ${BIN} ${OPTS}
+nohup ${PROXYCHAINS} ${BIN} ${OPTS} >> /dev/stdout 2>&1 &
 else
-${BIN} ${OPTS}
+nohup ${BIN} ${OPTS} >> /dev/stdout 2>&1 &
 fi
+
+while sleep 60; do
+if [ "${PROXYLIST_IP}" != "$(getent hosts ${PROXYLIST_STR2} | awk '{print $1}')" ]; then
+pkill ${BIN}
+nohup ${PROXYCHAINS} ${BIN} ${OPTS} >> /dev/stdout 2>&1 &
+fi
+done
