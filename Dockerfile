@@ -62,7 +62,7 @@ RUN set -ex \
    && rm -rf /var/cache/apk/*
 
 COPY entrypoint.sh /usr/local/bin/
-RUN chmod a+rwx usr/local/bin/entrypoint.sh
+RUN chmod a+rwx /usr/local/bin/entrypoint.sh
 
 EXPOSE 8443/tcp 8443/udp
 
