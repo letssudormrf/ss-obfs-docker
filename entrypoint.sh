@@ -43,10 +43,6 @@ while sleep 60; do
 if [ "${PROXYLIST_IP}" != "$(getent hosts ${PROXYLIST_STR2} | awk '{print $1}')" ]; then
 PROXYLIST_IP=$(getent hosts ${PROXYLIST_STR2} | awk '{print $1}')
 PROXYLIST="${PROXYLIST_STR1} ${PROXYLIST_IP} ${PROXYLIST_STR3}"
-if [ -n "${PROXYDNS}" ]; then
-proxy_dns="proxy_dns"
-fi
-if [ -n "${PROXY}" ]; then
 cat > ${PROXYCHAINS_CONF} <<EOF
 strict_chain
 quiet_mode
@@ -60,7 +56,6 @@ ${PROXYLIST}
 EOF
 pkill ${BIN}
 nohup ${PROXYCHAINS} ${BIN} ${OPTS} >> /dev/stdout 2>&1 &
-fi
 fi
 done
 else
