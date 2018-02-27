@@ -61,6 +61,7 @@ EOF
 pkill ${BIN}
 nohup ${PROXYCHAINS} ${BIN} ${OPTS} >> /dev/stdout 2>&1 &
 fi
+fi
 done
 else
 ${BIN} ${OPTS}
